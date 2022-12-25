@@ -22,7 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
@@ -83,42 +82,37 @@ public class UserService {
         return new User();
     }
 
-    public void addToLikedVideos(Video videoId) {
-        User currentUser = getCurrentUser();
-        currentUser.addToLikeVideos(videoId);
-        userRepository.save(currentUser);
+    public void addToLikedVideos(User currUser,Video videoId) {
+        currUser.addToLikeVideos(videoId);
+        userRepository.save(currUser);
     }
 
-    public boolean ifLikedVideo(Video videoId) {
-        return getCurrentUser().getLikedVideos().stream().anyMatch(likedVideo -> likedVideo.equals(videoId));
+    public boolean ifLikedVideo(User currUser, Video videoId) {
+        return currUser.getLikedVideos().stream().anyMatch(likedVideo -> likedVideo.equals(videoId));
     }
 
-    public boolean ifDisLikedVideo(Video videoId) {
-        return getCurrentUser().getDisLikedVideos().stream().anyMatch(likedVideo -> likedVideo.equals(videoId));
+    public boolean ifDisLikedVideo(User currUser,Video videoId) {
+        return currUser.getDisLikedVideos().stream().anyMatch(likedVideo -> likedVideo.equals(videoId));
     }
 
-    public void removeFromLikedVideos(Video videoId) {
-        User currentUser = getCurrentUser();
-        currentUser.removeFromLikedVideos(videoId);
-        userRepository.save(currentUser);
+    public void removeFromLikedVideos(User currUser,Video videoId) {
+        currUser.removeFromLikedVideos(videoId);
+        userRepository.save(currUser);
     }
 
-    public void removeFromDislikedVideos(Video videoId) {
-        User currentUser = getCurrentUser();
-        currentUser.removeFromDislikedVideos(videoId.getId());
-        userRepository.save(currentUser);
+    public void removeFromDislikedVideos(User currUser,Video videoId) {
+        currUser.removeFromDislikedVideos(videoId.getId());
+        userRepository.save(currUser);
     }
 
-    public void addToDisLikedVideos(Video videoId) {
-        User currentUser = getCurrentUser();
-        currentUser.addToDislikedVideos(videoId);
-        userRepository.save(currentUser);
+    public void addToDisLikedVideos(User currUser,Video videoId) {
+        currUser.addToDislikedVideos(videoId);
+        userRepository.save(currUser);
     }
 
-    public void addVideoToHistory(Video videoId) {
-        User currentUser = getCurrentUser();
-        currentUser.addToVideoHistory(videoId);
-        userRepository.save(currentUser);
+    public void addVideoToHistory(User currUser,Video videoId) {
+        currUser.addToVideoHistory(videoId);
+        userRepository.save(currUser);
     }
 
     public void subscribeUser(User userId) {

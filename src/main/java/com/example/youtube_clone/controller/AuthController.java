@@ -1,8 +1,12 @@
 package com.example.youtube_clone.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.example.youtube_clone.Exceptions.CustomErrorException;
+import com.example.youtube_clone.model.User;
+import com.example.youtube_clone.payload.response.ResponseHandler;
+import com.example.youtube_clone.security.jwt.CurrentUser;
 import com.example.youtube_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,10 +23,15 @@ import com.example.youtube_clone.payload.request.SignupRequest;
 public class AuthController {
 
   private final UserService userService;
-
-  @PostMapping("/test")
-  public ResponseEntity<?> test(@Valid @RequestBody LoginRequest loginRequest) {
-    throw new CustomErrorException( HttpStatus.BAD_REQUEST,"Email is already in use!");
+  private final CurrentUser currentUser;
+  @GetMapping("/test")
+  public ResponseEntity<?> test(HttpServletRequest request) {
+    System.out.println("request: "+currentUser.getCurrentUser(request));
+    User currUser = currentUser.getCurrentUser(request);
+    if(currUser==null){
+      throw new CustomErrorException(HttpStatus.NOT_FOUND,"user not found");
+    }
+    return ResponseHandler.generateResponse("curr user",HttpStatus.FOUND,currUser);
   }
 
   @PostMapping("/signin")

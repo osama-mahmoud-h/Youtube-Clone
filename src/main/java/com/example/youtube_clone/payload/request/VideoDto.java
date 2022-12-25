@@ -6,20 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class VideoDto {
-    private Long id;
+    @NotBlank(message = "you should provide all fileds")
+    private Long video_id;
     private String title;
     private String description;
-    private Set<String> tags;
-    private String videoUrl;
     private VideoStatus videoStatus;
     private String thumbnailUrl;
-    private Long likeCount;
-    private Long dislikeCount;
-    private Long viewCount;
 }
