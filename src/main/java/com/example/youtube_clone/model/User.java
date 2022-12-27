@@ -1,12 +1,16 @@
 package com.example.youtube_clone.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,21 +25,38 @@ public class User {
     private String email;
     private String password;
 
-    @Transient
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<User> subscribedToUsers = ConcurrentHashMap.newKeySet();
 
     @Transient
     private Set<User> subscribers = ConcurrentHashMap.newKeySet();
-    @Transient
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<Video>createdVideos = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Video> videoHistory = ConcurrentHashMap.newKeySet();
-    @Transient
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Video> likedVideos = ConcurrentHashMap.newKeySet();
-    @Transient
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Video> disLikedVideos = ConcurrentHashMap.newKeySet();
 
-    @ManyToMany(fetch = FetchType.EAGER,
+    @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.ALL}
     )
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Role> roles = new HashSet<>();
 
     public User(String username, String email, String password) {

@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/api/videos")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
+
 public class VideoController {
     private final VideoService videoService;
 
@@ -31,7 +33,7 @@ public class VideoController {
     }
 
     @GetMapping("/{videoId}")
-    public ResponseEntity<Object> getVideoDetails(HttpServletRequest request, @PathVariable Long videoId) {
+    public ResponseEntity<Object> getVideoDetails(HttpServletRequest request, @PathVariable("videoId") Long videoId) {
         return videoService.getVideoDetails(request,videoId);
     }
 
@@ -45,17 +47,12 @@ public class VideoController {
         return videoService.disLikeVideo(request,videoId);
     }
 
-    @PostMapping("/{videoId}/comment")
-    public void addComment(HttpServletRequest request, @RequestBody CommentDto commentDto) {
-        videoService.addComment(request, commentDto);
-    }
-
     @GetMapping("/{videoId}/comment")
     public ResponseEntity<Object> getAllComments(@PathVariable Long videoId) {
         return videoService.getAllComments(videoId);
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Object> getAllVideos() {
         return videoService.getAllVideos();
     }

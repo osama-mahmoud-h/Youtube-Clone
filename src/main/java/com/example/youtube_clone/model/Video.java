@@ -1,5 +1,7 @@
 package com.example.youtube_clone.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
@@ -7,6 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.util.Lazy;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -22,13 +25,10 @@ public class Video {
     private String title;
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User author;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Comment> commentList = new ArrayList<>();
 
     private Long likes ;
-
 
     private Long disLikes ;
 
@@ -42,9 +42,6 @@ public class Video {
     private Long viewCount ;
 
     private String thumbnailUrl;
-
-    @OneToMany
-    private List<Comment> commentList = new CopyOnWriteArrayList<>();
 
     public void incrementLikes() {
         likes++;

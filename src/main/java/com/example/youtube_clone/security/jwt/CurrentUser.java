@@ -16,7 +16,7 @@ public class CurrentUser {
 
     public User getCurrentUser(HttpServletRequest request){
         Long user_id = Long.parseLong(authenticatedUser.userData(request).get("user_id"));
-        User currentUser = userRepository.findUserById(user_id);
+        User currentUser = userRepository.findUserById(user_id).get();
         return currentUser;
     }
 }

@@ -41,7 +41,7 @@ public class UserService {
     public ResponseEntity<Object>login(@Valid @RequestBody LoginRequest loginRequest){
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -110,8 +110,8 @@ public class UserService {
         userRepository.save(currUser);
     }
 
-    public void addVideoToHistory(User currUser,Video videoId) {
-        currUser.addToVideoHistory(videoId);
+    public void addVideoToHistory(User currUser,Video video) {
+        currUser.addToVideoHistory(video);
         userRepository.save(currUser);
     }
 

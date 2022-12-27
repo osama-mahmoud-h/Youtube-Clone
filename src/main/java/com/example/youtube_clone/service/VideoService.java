@@ -16,7 +16,6 @@ public interface VideoService {
     public ResponseEntity<Object> getVideoDetails(HttpServletRequest request, Long videoId);
     public ResponseEntity<Object> likeVideo(HttpServletRequest request, Long videoId);
     public ResponseEntity<Object> disLikeVideo(HttpServletRequest request, Long videoId);
-    public void addComment(HttpServletRequest request, @RequestBody CommentDto commentDto);
     public ResponseEntity<Object> getAllComments(Long videoId);
     public ResponseEntity<Object> getAllVideos();
 }

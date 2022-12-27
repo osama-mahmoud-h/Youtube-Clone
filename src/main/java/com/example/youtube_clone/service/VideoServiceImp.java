@@ -11,6 +11,7 @@ import com.example.youtube_clone.payload.request.VideoDto;
 import com.example.youtube_clone.payload.response.ResponseHandler;
 import com.example.youtube_clone.repository.UserRepository;
 import com.example.youtube_clone.repository.VideoRepository;
+import com.example.youtube_clone.security.jwt.AuthenticatedUser;
 import com.example.youtube_clone.security.jwt.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class VideoServiceImp implements VideoService {
     private final VideoRepository videoRepository;
     private final UserService userService;
     private final FilesStorageService filesStorageService;
-    private final CurrentUser currentUser;
+    private final AuthenticatedUser authenticatedUser;
     private final UserRepository userRepository;
 
     public ResponseEntity<Object> uploadVideo(HttpServletRequest request,
@@ -46,19 +48,20 @@ public class VideoServiceImp implements VideoService {
             //upload video to server
             filesStorageService.save(video);
             //getUser
-            User currUser = currentUser.getCurrentUser(request);
+            User currUser = authenticatedUser.getCurrentUser(request).get();
 
             //create new post
             Video newVideo = new Video();
 
             newVideo.setVideoUrl(video_url);
-            newVideo.setAuthor(currUser);
             newVideo.setViewCount(0L);
             newVideo.setDisLikes(0L);
             newVideo.setLikes(0L);
             newVideo.setTitle(video.getOriginalFilename());
 
-            videoRepository.save(newVideo);
+            currUser.getCreatedVideos().add(newVideo);
+
+            userRepository.save(currUser);
         } catch (Exception exception) {
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
@@ -72,7 +75,7 @@ public class VideoServiceImp implements VideoService {
         Video savedVideo = getVideoById(videoDto.getVideo_id());
 
         //get CurrentUser
-        User currUser = currentUser.getCurrentUser(request);
+        User currUser = authenticatedUser.getCurrentUser(request).get();
 
         //check if  user.id == video.author.id
         if(!currUser.getId().equals(savedVideo.getId())){
@@ -104,21 +107,22 @@ public class VideoServiceImp implements VideoService {
 //    }
 
     private Video getVideoById(Long videoId) {
-        Video video = videoRepository.findById(videoId).get();
-       if(video==null){
+        Optional<Video> video = videoRepository.findById(videoId);
+       if(video.isEmpty()){
            throw new CustomErrorException(HttpStatus.NOT_FOUND,
                    "Cannot find video by id "+video);
        }
-       return video;
+       return video.get();
     }
 
     public ResponseEntity<Object> getVideoDetails(HttpServletRequest request, Long videoId) {
         Video savedVideo = getVideoById(videoId);
         //get currentUser
-        User currUser = currentUser.getCurrentUser(request);
+        Optional<User> currUser = authenticatedUser.getCurrentUser(request);
 
         increaseVideoCount(savedVideo);
-        userService.addVideoToHistory(currUser,savedVideo);
+
+      userService.addVideoToHistory(currUser.get(),savedVideo);
 
         return ResponseHandler.generateResponse("video get successfully",
                 HttpStatus.FOUND,
@@ -134,7 +138,7 @@ public class VideoServiceImp implements VideoService {
         Video videoById = getVideoById(videoId);
 
         //get currentUser
-        User currUser = currentUser.getCurrentUser(request);
+        User currUser = authenticatedUser.getCurrentUser(request).get();
 
         if (userService.ifLikedVideo(currUser,videoById)) {
             videoById.decrementLikes();
@@ -159,7 +163,7 @@ public class VideoServiceImp implements VideoService {
     public ResponseEntity<Object> disLikeVideo(HttpServletRequest request, Long videoId) {
         Video videoById = getVideoById(videoId);
         //get currentUser
-        User currUser = currentUser.getCurrentUser(request);
+        User currUser = authenticatedUser.getCurrentUser(request).get();
 
         if (userService.ifDisLikedVideo(currUser,videoById)) {
             videoById.decrementDisLikes();
@@ -196,18 +200,6 @@ public class VideoServiceImp implements VideoService {
 //        return videoDto;
 //    }
 
-    public void addComment(HttpServletRequest request, @RequestBody CommentDto commentDto) {
-        User currUser = currentUser.getCurrentUser(request);
-        Video video = getVideoById(commentDto.getVideo_id());
-
-        Comment comment = new Comment();
-        comment.setText(commentDto.getCommentText());
-        comment.setAuthorId(currUser);
-
-        video.addComment(comment);
-
-        videoRepository.save(video);
-    }
 
     public ResponseEntity<Object> getAllComments(Long videoId) {
         Video video = getVideoById(videoId);
@@ -226,8 +218,10 @@ public class VideoServiceImp implements VideoService {
 //    }
 
     public ResponseEntity<Object> getAllVideos() {
-        return ResponseHandler.generateResponse("video liked",
+        List<Video> allVideos = videoRepository.findAll();
+        System.out.println("videos: "+allVideos.size());
+        return ResponseHandler.generateResponse("all videos get ",
                 HttpStatus.CREATED,
-                videoRepository.findAll());
+                allVideos);
     }
 }

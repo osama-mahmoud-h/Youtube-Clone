@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @NoArgsConstructor
 @Component
@@ -32,6 +33,12 @@ public class AuthenticatedUser {
         }
 
         return userData;
+    }
+
+    public Optional<User> getCurrentUser(HttpServletRequest request){
+        Long user_id = Long.parseLong(userData(request).get("user_id"));
+        Optional<User> currUser = userRepository.findUserById(user_id);
+        return currUser;
     }
 
     private String parseJwt(HttpServletRequest request) {
