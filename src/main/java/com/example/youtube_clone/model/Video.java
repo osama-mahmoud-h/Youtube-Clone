@@ -26,6 +26,7 @@ public class Video {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Comment> commentList = new ArrayList<>();
 
     private Long likes ;

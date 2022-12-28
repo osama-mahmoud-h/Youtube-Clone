@@ -1,5 +1,6 @@
 package com.example.youtube_clone.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,39 +27,57 @@ public class User {
     private String password;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Set<User> subscribedToUsers = ConcurrentHashMap.newKeySet();
-
-    @Transient
-    private Set<User> subscribers = ConcurrentHashMap.newKeySet();
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Set<User> subscribedToUsers = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private Set<User> subscribers = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Video>createdVideos = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
+   // @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Video> videoHistory = ConcurrentHashMap.newKeySet();
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL}
-    )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(name = "user_likes",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "video_id") })
+    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
     private Set<Video> likedVideos = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.ALL}
-    )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(name = "user_dislikes",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "video_id") })
+    @JsonIgnore
+  //  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Video> disLikedVideos = new HashSet();
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.ALL}
     )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
+    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Role> roles = new HashSet<>();
 
     public User(String username, String email, String password) {
