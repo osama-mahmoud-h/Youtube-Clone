@@ -14,9 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +46,18 @@ public class CommentService {
         return ResponseHandler.generateResponse("comment added success",
                 HttpStatus.CREATED,
                 comment);
+    }
+
+    public ResponseEntity<?>getComments(@PathVariable("video_id") Long video_id){
+        Optional<Video> video = videoRepository.findById(video_id);
+        if(video.isEmpty()){
+            throw new CustomErrorException(HttpStatus.NOT_FOUND,"video not found");
+        }
+
+        List<Comment> allComments = video.get().getCommentList();
+        return ResponseHandler.generateResponse("comment added success",
+                HttpStatus.CREATED,
+                allComments);
     }
 
 }

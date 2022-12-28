@@ -48,7 +48,7 @@ public class Video {
     }
 
     public void decrementLikes() {
-        likes++;
+        likes--;
     }
 
     public void incrementDisLikes() {

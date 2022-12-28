@@ -82,26 +82,39 @@ public class UserService {
         return new User();
     }
 
-    public void addToLikedVideos(User currUser,Video videoId) {
-        currUser.addToLikeVideos(videoId);
+    public void addToLikedVideos(User currUser,Video video) {
+        currUser.addToLikeVideos(video);
         userRepository.save(currUser);
     }
 
     public boolean ifLikedVideo(User currUser, Video videoId) {
-        return currUser.getLikedVideos().stream().anyMatch(likedVideo -> likedVideo.equals(videoId));
+        Video video = currUser.getLikedVideos().stream().
+                filter(likedVideo -> likedVideo.getId().equals(videoId.getId()))
+                .findAny()
+                .orElse(null);
+
+        System.out.println("liked before: "+video);
+        return video!=null?true:false;//currUser.getLikedVideos().stream().anyMatch(likedVideo -> likedVideo.getId().equals(videoId.getId()));
     }
 
     public boolean ifDisLikedVideo(User currUser,Video videoId) {
-        return currUser.getDisLikedVideos().stream().anyMatch(likedVideo -> likedVideo.equals(videoId));
+        Video video = currUser.getDisLikedVideos().stream().
+                filter(likedVideo -> likedVideo.getId().equals(videoId.getId()))
+                .findAny()
+                .orElse(null);
+        System.out.println("disLiked before?: "+video);
+
+        return video != null ? true : false;
     }
 
-    public void removeFromLikedVideos(User currUser,Video videoId) {
+    public void removeFromLikedVideos(User currUser,Long videoId) {
+
         currUser.removeFromLikedVideos(videoId);
         userRepository.save(currUser);
     }
 
-    public void removeFromDislikedVideos(User currUser,Video videoId) {
-        currUser.removeFromDislikedVideos(videoId.getId());
+    public void removeFromDislikedVideos(User currUser,Long videoId) {
+        currUser.removeFromDislikedVideos(videoId);
         userRepository.save(currUser);
     }
 

@@ -47,10 +47,10 @@ public class VideoController {
         return videoService.disLikeVideo(request,videoId);
     }
 
-    @GetMapping("/{videoId}/comment")
-    public ResponseEntity<Object> getAllComments(@PathVariable Long videoId) {
-        return videoService.getAllComments(videoId);
-    }
+//    @GetMapping("/{videoId}/comment")
+//    public ResponseEntity<Object> getAllComments(@PathVariable Long videoId) {
+//        return videoService.getAllComments(videoId);
+//    }
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllVideos() {

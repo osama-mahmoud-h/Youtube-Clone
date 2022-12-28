@@ -26,7 +26,8 @@ public class Comment {
 //    @OnDelete(action = OnDeleteAction.CASCADE)
 //    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 //    private User authorId;
-
+      @Transient
+      private User user;
 //    @ManyToOne(fetch = FetchType.LAZY, optional = false)
 //    @JoinColumn(name = "video_id", nullable = false)
 //    @OnDelete(action = OnDeleteAction.CASCADE)

@@ -43,15 +43,17 @@ public class User {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Set<Video> videoHistory = ConcurrentHashMap.newKeySet();
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Set<Video> likedVideos = ConcurrentHashMap.newKeySet();
+    private Set<Video> likedVideos = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id")
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.ALL}
+    )
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Set<Video> disLikedVideos = ConcurrentHashMap.newKeySet();
+    private Set<Video> disLikedVideos = new HashSet();
 
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {CascadeType.ALL}
@@ -65,16 +67,17 @@ public class User {
         this.password = password;
     }
 
-    public void addToLikeVideos(Video videoId) {
-        likedVideos.add(videoId);
+    public void addToLikeVideos(Video video) {
+         likedVideos.add(video);
     }
 
-    public void removeFromLikedVideos(Video videoId) {
-        likedVideos.remove(videoId);
+    public boolean removeFromLikedVideos(Long videoId) {
+        boolean removed =  likedVideos.removeIf(video->video.getId().equals(videoId));
+        return removed;
     }
 
     public void removeFromDislikedVideos(Long videoId) {
-        disLikedVideos.remove(videoId);
+        disLikedVideos.removeIf(video->video.getId().equals(videoId));
     }
 
     public void addToDislikedVideos(Video videoId) {

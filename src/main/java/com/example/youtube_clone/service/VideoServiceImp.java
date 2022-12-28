@@ -39,7 +39,7 @@ public class VideoServiceImp implements VideoService {
     public ResponseEntity<Object> uploadVideo(HttpServletRequest request,
                                               MultipartFile video
     ) {
-        String video_url = "Uploads/";
+        String video_url = "videos/";
         try {
             if (!video.getContentType().startsWith("video")) {
                 throw new CustomErrorException("not valid video");
@@ -136,28 +136,30 @@ public class VideoServiceImp implements VideoService {
 
     public ResponseEntity<Object> likeVideo(HttpServletRequest request, Long videoId) {
         Video videoById = getVideoById(videoId);
-
-        //get currentUser
         User currUser = authenticatedUser.getCurrentUser(request).get();
+      //  userService.removeFromLikedVideos(currUser,videoId);
 
-        if (userService.ifLikedVideo(currUser,videoById)) {
-            videoById.decrementLikes();
-            userService.removeFromLikedVideos(currUser,videoById);
-        } else if (userService.ifDisLikedVideo(currUser,videoById)) {
+        if (userService.ifDisLikedVideo(currUser,videoById)) {
+            System.out.println("from like function: , disliked before");
             videoById.decrementDisLikes();
-            userService.removeFromDislikedVideos(currUser,videoById);
+            userService.removeFromDislikedVideos(currUser,videoId);
             videoById.incrementLikes();
             userService.addToLikedVideos(currUser,videoById);
+        } else if (userService.ifLikedVideo(currUser,videoById)) {
+            System.out.println("liked bfore======");
+            videoById.decrementLikes();
+            userService.removeFromLikedVideos(currUser,videoId);
         } else {
+            System.out.println("like case3: ");
             videoById.incrementLikes();
             userService.addToLikedVideos(currUser,videoById);
         }
 
-        videoRepository.save(videoById);
+      //  videoRepository.save(videoById);
 
         return ResponseHandler.generateResponse("video liked",
                 HttpStatus.CREATED,
-                null);
+                videoById);
     }
 
     public ResponseEntity<Object> disLikeVideo(HttpServletRequest request, Long videoId) {
@@ -165,24 +167,33 @@ public class VideoServiceImp implements VideoService {
         //get currentUser
         User currUser = authenticatedUser.getCurrentUser(request).get();
 
-        if (userService.ifDisLikedVideo(currUser,videoById)) {
-            videoById.decrementDisLikes();
-            userService.removeFromDislikedVideos(currUser,videoById);
-        } else if (userService.ifLikedVideo(currUser,videoById)) {
+        System.out.println("user like count"+currUser.getLikedVideos().size()+" , "+
+                userService.ifLikedVideo(currUser,videoById));
+        System.out.println("user dislike count"+currUser.getDisLikedVideos().size());
+      //  userService.removeFromLikedVideos(currUser,videoId);
+
+        if (userService.ifLikedVideo(currUser,videoById)) {
+            System.out.println("dilike -> case1:");
             videoById.decrementLikes();
-            userService.removeFromLikedVideos(currUser,videoById);
+            userService.removeFromLikedVideos(currUser,videoId);
             videoById.incrementDisLikes();
             userService.addToDisLikedVideos(currUser,videoById);
+
+        } else if (userService.ifDisLikedVideo(currUser,videoById)) {
+            System.out.println("dislike -> case2 : from dislike: , liked before");
+            videoById.decrementDisLikes();
+            userService.removeFromDislikedVideos(currUser,videoId);
         } else {
+            System.out.println("case:3");
             videoById.incrementDisLikes();
             userService.addToDisLikedVideos(currUser,videoById);
         }
 
-        videoRepository.save(videoById);
+       // videoRepository.save(videoById);
 
         return ResponseHandler.generateResponse("video disliked",
                 HttpStatus.CREATED,
-                null);
+                videoById);
     }
 
 //    private VideoDto mapToVideoDto(Video videoById) {

@@ -4,10 +4,7 @@ import com.example.youtube_clone.payload.request.CommentDto;
 import com.example.youtube_clone.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,5 +19,10 @@ public class CommentController {
                                         @RequestBody CommentDto commentDto
     ) {
         return commentService.addComment(request,commentDto);
+    }
+
+    @GetMapping("/all/{video_id}")
+    public ResponseEntity<?>getComments(@PathVariable("video_id") Long video_id) {
+        return commentService.getComments(video_id);
     }
 }
