@@ -9,11 +9,12 @@ import java.util.stream.Stream;
 public interface FilesStorageService {
     public void init();
 
-    public void save(MultipartFile file);
+    public void save(MultipartFile file,String fileName);
 
     public Resource load(String filename);
 
     public void deleteAll();
+    public boolean deletefile(String name);
 
     public Stream<Path> loadAll();
 }

@@ -6,24 +6,21 @@ import com.example.youtube_clone.Exceptions.CustomErrorException;
 import com.example.youtube_clone.model.Comment;
 import com.example.youtube_clone.model.User;
 import com.example.youtube_clone.model.Video;
-import com.example.youtube_clone.payload.request.CommentDto;
 import com.example.youtube_clone.payload.request.VideoDto;
 import com.example.youtube_clone.payload.response.ResponseHandler;
 import com.example.youtube_clone.repository.UserRepository;
 import com.example.youtube_clone.repository.VideoRepository;
 import com.example.youtube_clone.security.jwt.AuthenticatedUser;
-import com.example.youtube_clone.security.jwt.CurrentUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -36,17 +33,21 @@ public class VideoServiceImp implements VideoService {
     private final AuthenticatedUser authenticatedUser;
     private final UserRepository userRepository;
 
+    @Override
     public ResponseEntity<Object> uploadVideo(HttpServletRequest request,
-                                              MultipartFile video
+                                              MultipartFile video,
+                                              String title,
+                                              String description
     ) {
         String video_url = "videos/";
         try {
             if (!video.getContentType().startsWith("video")) {
                 throw new CustomErrorException("not valid video");
             }
-            video_url += video.getOriginalFilename();
+            String random = String.valueOf(new Random().nextLong());
+            video_url += random+"."+video.getOriginalFilename();
             //upload video to server
-            filesStorageService.save(video);
+            filesStorageService.save(video,random);
             //getUser
             User currUser = authenticatedUser.getCurrentUser(request).get();
 
@@ -57,7 +58,8 @@ public class VideoServiceImp implements VideoService {
             newVideo.setViewCount(0L);
             newVideo.setDisLikes(0L);
             newVideo.setLikes(0L);
-            newVideo.setTitle(video.getOriginalFilename());
+            newVideo.setTitle(title);
+            newVideo.setDescription(description);
 
             currUser.getCreatedVideos().add(newVideo);
 
@@ -69,6 +71,8 @@ public class VideoServiceImp implements VideoService {
                 HttpStatus.CREATED,
                 null);
     }
+
+
 
     public ResponseEntity<Object> editVideo(HttpServletRequest request, VideoDto videoDto) {
         // Find the video by videoId

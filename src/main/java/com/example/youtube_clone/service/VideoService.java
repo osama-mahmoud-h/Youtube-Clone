@@ -4,13 +4,16 @@ import com.example.youtube_clone.payload.request.CommentDto;
 import com.example.youtube_clone.payload.request.VideoDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
 public interface VideoService {
     public ResponseEntity<Object> uploadVideo(HttpServletRequest request,
-                                              MultipartFile video
+                                              MultipartFile video,
+                                               String title,
+                                               String description
     );
     public ResponseEntity<Object> editVideo(HttpServletRequest request, VideoDto videoDto);
     public ResponseEntity<Object> getVideoDetails(HttpServletRequest request, Long videoId);

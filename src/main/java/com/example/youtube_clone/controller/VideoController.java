@@ -18,8 +18,11 @@ public class VideoController {
     private final VideoService videoService;
 
     @PostMapping("/upload")
-    public ResponseEntity<Object> uploadVideo(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
-        return videoService.uploadVideo(request,file);
+    public ResponseEntity<Object> uploadVideo(HttpServletRequest request,
+                                              @RequestParam("file") MultipartFile file,
+                                              @RequestParam("title") String title,
+                                              @RequestParam("description")String description) {
+        return videoService.uploadVideo(request,file,title,description);
     }
 
     @PostMapping("/thumbnail")

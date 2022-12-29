@@ -116,7 +116,7 @@ public class User {
     }
 
     public void removeFromSubscribedToUsers(Long userId) {
-        subscribedToUsers.remove(userId);
+        subscribedToUsers.removeIf(usr->usr.getId().equals(userId));
     }
 
     public void removeFromSubscribers(Long userId) {

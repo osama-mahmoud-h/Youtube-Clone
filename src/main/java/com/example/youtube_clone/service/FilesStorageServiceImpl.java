@@ -28,9 +28,9 @@ public class FilesStorageServiceImpl implements FilesStorageService{
     }
 
     @Override
-    public void save(MultipartFile file) {
+    public void save(MultipartFile file,String fileName) {
         try {
-            Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+            Files.copy(file.getInputStream(), this.root.resolve(fileName+"."+file.getOriginalFilename()));
         } catch (Exception e) {
             if (e instanceof FileAlreadyExistsException) {
                 throw new RuntimeException("A file of that name already exists.");
@@ -58,6 +58,17 @@ public class FilesStorageServiceImpl implements FilesStorageService{
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(root.toFile());
+    }
+
+    @Override
+    public boolean deletefile(String filename) {
+          Path file = root.resolve(filename);
+        try {
+            Files.deleteIfExists(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
     @Override

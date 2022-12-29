@@ -8,6 +8,7 @@ import com.example.youtube_clone.payload.response.JwtResponse;
 import com.example.youtube_clone.payload.response.ResponseHandler;
 import com.example.youtube_clone.repository.RoleRepository;
 import com.example.youtube_clone.repository.UserRepository;
+import com.example.youtube_clone.security.jwt.AuthenticatedUser;
 import com.example.youtube_clone.security.jwt.JwtUtils;
 import com.example.youtube_clone.security.securityServices.UserDetailsImpl;
 import com.example.youtube_clone.model.User;
@@ -22,9 +23,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +36,9 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final AuthenticationManager authenticationManager;
+
+    private final AuthenticatedUser authenticatedUser;
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
@@ -128,35 +134,60 @@ public class UserService {
         userRepository.save(currUser);
     }
 
-    public void subscribeUser(User userId) {
-        User currentUser = getCurrentUser();
-        currentUser.addToSubscribedToUsers(userId);
+    public boolean isVideoAuthor(User user, Long video_d){
+        Video video = user.getCreatedVideos().
+                stream()
+                .filter(vd ->vd.getId().equals(video_d))
+                .findFirst()
+                .orElse(null);
 
-        User user = getUserById(userId.getId());
+        return video==null ? false : true;
+    }
+
+    public void subscribeUser(User user) {
+        User currentUser = getCurrentUser();
+        currentUser.addToSubscribedToUsers(user);
         user.addToSubscribers(currentUser);
 
         userRepository.save(currentUser);
         userRepository.save(user);
     }
 
-    public void unSubscribeUser(Long userId) {
+    public void unSubscribeUser(User user) {
         User currentUser = getCurrentUser();
-        currentUser.removeFromSubscribedToUsers(userId);
+        currentUser.removeFromSubscribedToUsers(user.getId());
 
-        User user = getUserById(userId);
         user.removeFromSubscribers(currentUser.getId());
 
         userRepository.save(currentUser);
         userRepository.save(user);
     }
 
-    public Set<Video> userHistory(Long userId) {
-        User user = getUserById(userId);
+    public ResponseEntity<?> getSubscribersCount(Long user_id){
+        Optional<User> channel  = userRepository.findUserById(user_id);
+        if(channel.isEmpty()){
+            throw new CustomErrorException(HttpStatus.NOT_FOUND,"channel not found");
+        }
+        return ResponseHandler.generateResponse("count of subscribers",
+                HttpStatus.OK,
+                channel.get().getSubscribers().size()
+                );
+    }
+
+    public ResponseEntity<?> chanelsUserSubscribed(HttpServletRequest request){
+        Optional<User> currUser =  authenticatedUser.getCurrentUser(request);
+
+        Set<User> channels=  currUser.get().getSubscribedToUsers();
+
+        return ResponseHandler.generateResponse("channles user subscribed",
+                HttpStatus.OK,
+                channels
+        );
+    }
+
+    public Set<Video> userHistory(User user) {
         return user.getVideoHistory();
     }
 
-    private User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Cannot find user with userId " + userId));
-    }
+
 }
