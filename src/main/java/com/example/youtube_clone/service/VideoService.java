@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface VideoService {
     public ResponseEntity<Object> uploadVideo(HttpServletRequest request,
-                                              MultipartFile video,
-                                               String title,
-                                               String description
+                                              MultipartFile video
+//                                               String title,
+//                                               String description
     );
     public ResponseEntity<Object> editVideo(HttpServletRequest request, VideoDto videoDto);
     public ResponseEntity<Object> getVideoDetails(HttpServletRequest request, Long videoId);

@@ -35,11 +35,11 @@ public class VideoServiceImp implements VideoService {
 
     @Override
     public ResponseEntity<Object> uploadVideo(HttpServletRequest request,
-                                              MultipartFile video,
-                                              String title,
-                                              String description
+                                              MultipartFile video
+//                                              String title,
+//                                              String description
     ) {
-        String video_url = "videos/";
+        String video_url = "/public/videos/";
         try {
             if (!video.getContentType().startsWith("video")) {
                 throw new CustomErrorException("not valid video");
@@ -58,8 +58,8 @@ public class VideoServiceImp implements VideoService {
             newVideo.setViewCount(0L);
             newVideo.setDisLikes(0L);
             newVideo.setLikes(0L);
-            newVideo.setTitle(title);
-            newVideo.setDescription(description);
+            newVideo.setTitle(video.getName());
+          //  newVideo.setDescription(description);
 
             currUser.getCreatedVideos().add(newVideo);
 
@@ -129,7 +129,7 @@ public class VideoServiceImp implements VideoService {
       userService.addVideoToHistory(currUser.get(),savedVideo);
 
         return ResponseHandler.generateResponse("video get successfully",
-                HttpStatus.FOUND,
+                HttpStatus.OK,
                 savedVideo);
     }
 
