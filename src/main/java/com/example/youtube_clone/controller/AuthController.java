@@ -8,6 +8,7 @@ import com.example.youtube_clone.model.User;
 import com.example.youtube_clone.payload.response.ResponseHandler;
 import com.example.youtube_clone.security.jwt.CurrentUser;
 import com.example.youtube_clone.service.UserService;
+import com.example.youtube_clone.service.imp.UserServiceImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ public class AuthController {
 
   private final UserService userService;
   private final CurrentUser currentUser;
+
   @GetMapping("/test")
   public ResponseEntity<?> test(HttpServletRequest request) {
     System.out.println("request: "+currentUser.getCurrentUser(request));

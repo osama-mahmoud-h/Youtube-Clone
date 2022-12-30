@@ -1,6 +1,7 @@
 package com.example.youtube_clone.controller;
 
 import com.example.youtube_clone.service.UserService;
+import com.example.youtube_clone.service.imp.UserServiceImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

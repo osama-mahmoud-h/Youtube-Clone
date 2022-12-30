@@ -2,6 +2,7 @@ package com.example.youtube_clone.controller;
 
 import com.example.youtube_clone.payload.request.CommentDto;
 import com.example.youtube_clone.service.CommentService;
+import com.example.youtube_clone.service.imp.CommentServiceImp;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

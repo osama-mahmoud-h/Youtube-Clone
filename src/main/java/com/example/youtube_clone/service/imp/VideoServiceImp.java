@@ -1,4 +1,4 @@
-package com.example.youtube_clone.service;
+package com.example.youtube_clone.service.imp;
 
 
 
@@ -11,6 +11,8 @@ import com.example.youtube_clone.payload.response.ResponseHandler;
 import com.example.youtube_clone.repository.UserRepository;
 import com.example.youtube_clone.repository.VideoRepository;
 import com.example.youtube_clone.security.jwt.AuthenticatedUser;
+import com.example.youtube_clone.service.FilesStorageService;
+import com.example.youtube_clone.service.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class VideoServiceImp implements VideoService {
 
     private final S3Service s3Service;
     private final VideoRepository videoRepository;
-    private final UserService userService;
+    private final UserServiceImp userService;
     private final FilesStorageService filesStorageService;
     private final AuthenticatedUser authenticatedUser;
     private final UserRepository userRepository;
