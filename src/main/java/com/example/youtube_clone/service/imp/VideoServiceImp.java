@@ -173,29 +173,19 @@ public class VideoServiceImp implements VideoService {
         //get currentUser
         User currUser = authenticatedUser.getCurrentUser(request).get();
 
-        System.out.println("user like count"+currUser.getLikedVideos().size()+" , "+
-                userService.ifLikedVideo(currUser,videoById));
-        System.out.println("user dislike count"+currUser.getDisLikedVideos().size());
-      //  userService.removeFromLikedVideos(currUser,videoId);
-
         if (userService.ifLikedVideo(currUser,videoById)) {
-            System.out.println("dilike -> case1:");
             videoById.decrementLikes();
             userService.removeFromLikedVideos(currUser,videoId);
             videoById.incrementDisLikes();
             userService.addToDisLikedVideos(currUser,videoById);
 
         } else if (userService.ifDisLikedVideo(currUser,videoById)) {
-            System.out.println("dislike -> case2 : from dislike: , liked before");
             videoById.decrementDisLikes();
             userService.removeFromDislikedVideos(currUser,videoId);
         } else {
-            System.out.println("case:3");
             videoById.incrementDisLikes();
             userService.addToDisLikedVideos(currUser,videoById);
         }
-
-       // videoRepository.save(videoById);
 
         return ResponseHandler.generateResponse("video disliked",
                 HttpStatus.CREATED,

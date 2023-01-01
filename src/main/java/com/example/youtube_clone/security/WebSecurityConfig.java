@@ -88,7 +88,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
         .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .authorizeRequests()
-           .antMatchers("/**").permitAll() //permit swagger
+            .antMatchers("/**").permitAll() //permit swagger
             .antMatchers("/api/auth/**").permitAll()
             .antMatchers("/api/file/**").permitAll()
             .antMatchers("/api/post/**").permitAll()
