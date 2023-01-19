@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "comments")
 @Data
 @ToString
 //@AllArgsConstructor

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Entity
+@Entity(name = "users")
 @Data
 @NoArgsConstructor
 public class User {

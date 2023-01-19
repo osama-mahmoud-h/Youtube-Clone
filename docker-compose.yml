@@ -1,0 +1,55 @@
+version: '2.14.*'
+services:
+  postgresqlDB:
+    image: 'postgres:alpine'
+    container_name: postgresqlDB
+    networks:
+      - youtube-clone-net
+    ports:
+      - "5430:5432"
+    volumes:
+      - /home/osama/OSAMA/docker-work/postgresql/volumes/data:/var/lib/postgresql/data
+      - /home/osama/OSAMA/docker-work/postgresql/volumes/init/docker_postgres_init.sql:/docker-entrypoint-initdb.d/init-user-db.sh
+    #  - /home/osama/OSAMA/docker-work/postgresql/volumes/init/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+    environment:
+      - POSTGRES_DB=youtube
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=osama
+      #- PGDATA="/data/postgres"
+
+  youtube-api:
+    container_name: youtube-api
+    networks:
+      - youtube-clone-net
+    image: 'youtube-rest-api:v1.2'
+    #build:
+   #   context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresqlDB
+    environment:
+     - server.port=8080
+     - spring.datasource.url=jdbc:postgresql://postgresqlDB:5432/youtube
+     - spring.datasource.username=osama
+     - spring.datasource.password=123456
+     - spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+     #- spring.jpa.hibernate.ddl-auto = update
+    # - spring.jpa.properties.hibernate.format_sql=true
+#     -  spring.jpa.show-sql=true
+#     -  springdoc.api-docs.path=/api-docs
+#
+#     -  logging.level.org.springframework.context=DEBUG
+#     - server.error.include-message=always
+#     -
+#     -  server.app.jwtSecret="YUJdri88%Reh$@(*&^%sdsew$sdTdlk$TYreHy444y#%wrw^Rr&ry4*t4-4=y"
+#     -  server.app.jwtExpirationMs=86400000
+#
+#     -  spring.servlet.multipart.max-file-size=50MB
+#     -  spring.servlet.multipart.max-request-size=50MB
+#     -  spring.mvc.pathmatch.matching-strategy=ant-path-matcher
+
+networks:
+  youtube-clone-net:
+    driver: bridge

@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Entity
+@Entity(name = "videos")
 @Data
 @ToString
 public class Video {
